@@ -82,7 +82,7 @@ const Graficos = () => {
     setFilteredAtividades(filtered);
   };
 
-  // Dados para o gráfico de totais
+  // Dados para o gráfico de totais (não filtrado por data)
   const totalsData = [
     {
       name: 'Transportadoras',
@@ -202,27 +202,7 @@ const Graficos = () => {
 
         {/* Gráficos */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Gráfico de Totais */}
-          <Card className="bg-gray-800/95 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white">Total de Transportadoras e Atividades</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={totalsData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="name" stroke="#9CA3AF" />
-                    <YAxis stroke="#9CA3AF" />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="value" fill="#3b82f6" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-
-          {/* Gráfico de Tempo */}
+          {/* Gráfico de Tempo - PRIMEIRO */}
           <Card className="bg-gray-800/95 border-gray-700 lg:col-span-2">
             <CardHeader>
               <CardTitle className="text-white">
@@ -303,6 +283,26 @@ const Graficos = () => {
             </CardContent>
           </Card>
 
+          {/* Gráfico de Totais */}
+          <Card className="bg-gray-800/95 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-white">Total de Transportadoras e Atividades</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig} className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={totalsData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis dataKey="name" stroke="#9CA3AF" />
+                    <YAxis stroke="#9CA3AF" />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar dataKey="value" fill="#3b82f6" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
           {/* Gráfico de Aprovação */}
           <Card className="bg-gray-800/95 border-gray-700">
             <CardHeader>
@@ -340,41 +340,36 @@ const Graficos = () => {
             </CardContent>
           </Card>
 
-          {/* Estatísticas Resumidas */}
-          <Card className="bg-gray-800/95 border-gray-700">
+          {/* Estatísticas Resumidas - NÃO FILTRADO POR DATA */}
+          <Card className="bg-gray-800/95 border-gray-700 lg:col-span-2">
             <CardHeader>
               <CardTitle className="text-white">Resumo Estatístico</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-blue-900/20 p-3 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-400">
-                      {transportadoras.length}
-                    </div>
-                    <div className="text-blue-300 text-sm">Total Transportadoras</div>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-blue-900/20 p-3 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-400">
+                    {transportadoras.length}
                   </div>
-                  <div className="bg-green-900/20 p-3 rounded-lg">
-                    <div className="text-2xl font-bold text-green-400">
-                      {atividades.length}
-                    </div>
-                    <div className="text-green-300 text-sm">Total Atividades</div>
-                  </div>
+                  <div className="text-blue-300 text-sm">Total Transportadoras</div>
                 </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-emerald-900/20 p-3 rounded-lg">
-                    <div className="text-2xl font-bold text-emerald-400">
-                      {filteredAtividades.filter(a => a.status === 'aprovado').length}
-                    </div>
-                    <div className="text-emerald-300 text-sm">Atividades Aprovadas</div>
+                <div className="bg-green-900/20 p-3 rounded-lg">
+                  <div className="text-2xl font-bold text-green-400">
+                    {atividades.length}
                   </div>
-                  <div className="bg-yellow-900/20 p-3 rounded-lg">
-                    <div className="text-2xl font-bold text-yellow-400">
-                      {filteredAtividades.filter(a => a.status === 'concluido' || a.status === 'pendente').length}
-                    </div>
-                    <div className="text-yellow-300 text-sm">Atividades Pendentes</div>
+                  <div className="text-green-300 text-sm">Total Atividades</div>
+                </div>
+                <div className="bg-emerald-900/20 p-3 rounded-lg">
+                  <div className="text-2xl font-bold text-emerald-400">
+                    {atividades.filter(a => a.status === 'aprovado').length}
                   </div>
+                  <div className="text-emerald-300 text-sm">Atividades Aprovadas</div>
+                </div>
+                <div className="bg-yellow-900/20 p-3 rounded-lg">
+                  <div className="text-2xl font-bold text-yellow-400">
+                    {atividades.filter(a => a.status === 'concluido' || a.status === 'pendente').length}
+                  </div>
+                  <div className="text-yellow-300 text-sm">Atividades Pendentes</div>
                 </div>
               </div>
             </CardContent>
