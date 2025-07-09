@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -114,6 +115,9 @@ const Graficos = () => {
     ];
   };
 
+  // Atividades que não atingiram o tempo
+  const atividadesTempoNaoAtingido = filteredAtividades.filter(atividade => atividade.tempo_match === false);
+
   // Dados para o gráfico de aprovação
   const aprovacaoData = () => {
     const aprovadas = filteredAtividades.filter(a => a.status === 'aprovado').length;
@@ -219,7 +223,7 @@ const Graficos = () => {
           </Card>
 
           {/* Gráfico de Tempo */}
-          <Card className="bg-gray-800/95 border-gray-700">
+          <Card className="bg-gray-800/95 border-gray-700 lg:col-span-2">
             <CardHeader>
               <CardTitle className="text-white">
                 Tempo Atingido vs Não Atingido
@@ -231,27 +235,71 @@ const Graficos = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={chartConfig} className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={tempoData()}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, value }) => `${name}: ${value}`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {tempoData().map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <ChartContainer config={chartConfig} className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={tempoData()}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, value }) => `${name}: ${value}`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {tempoData().map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+
+                {/* Tabela de Atividades que Não Atingiram o Tempo */}
+                <div className="space-y-2">
+                  <h4 className="text-white font-medium">Atividades que Não Atingiram o Tempo</h4>
+                  <div className="bg-gray-900/50 rounded-lg p-4 max-h-[300px] overflow-y-auto">
+                    {atividadesTempoNaoAtingido.length === 0 ? (
+                      <p className="text-gray-400 text-sm">Nenhuma atividade perdeu tempo no período selecionado</p>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="border-gray-700">
+                            <TableHead className="text-gray-300">ID</TableHead>
+                            <TableHead className="text-gray-300">Transportadora</TableHead>
+                            <TableHead className="text-gray-300">Planejado</TableHead>
+                            <TableHead className="text-gray-300">Finalizado</TableHead>
+                            <TableHead className="text-gray-300">Atraso</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {atividadesTempoNaoAtingido.map((atividade) => (
+                            <TableRow key={atividade.id} className="border-gray-700">
+                              <TableCell className="text-gray-300">{atividade.id_sequencial}</TableCell>
+                              <TableCell className="text-gray-300">{atividade.transportadora_nome}</TableCell>
+                              <TableCell className="text-gray-300">{atividade.horario_planejado}</TableCell>
+                              <TableCell className="text-gray-300">{atividade.horario_finalizacao || 'N/A'}</TableCell>
+                              <TableCell className="text-red-400">
+                                {atividade.horario_finalizacao && atividade.horario_planejado ? (
+                                  (() => {
+                                    const planejado = new Date(`2024-01-01 ${atividade.horario_planejado}`);
+                                    const finalizado = new Date(`2024-01-01 ${atividade.horario_finalizacao}`);
+                                    const diff = Math.round((finalizado.getTime() - planejado.getTime()) / (1000 * 60));
+                                    return diff > 0 ? `+${diff}min` : `${diff}min`;
+                                  })()
+                                ) : 'N/A'}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
