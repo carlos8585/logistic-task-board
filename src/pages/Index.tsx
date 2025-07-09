@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Ship, Users, Settings } from "lucide-react";
+import { Users, Settings } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -13,7 +13,11 @@ const Index = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <div className="flex items-center justify-center mb-8">
-            <Ship className="h-20 w-20 text-blue-400 mr-6" />
+            <img 
+              src="/lovable-uploads/9b9e57d3-e4e9-4948-b276-1981b916d6ab.png" 
+              alt="3M Logo" 
+              className="h-20 w-auto mr-6"
+            />
             <div>
               <h1 className="text-5xl font-bold text-white mb-3 tracking-wide">LATAM Logistics</h1>
               <p className="text-xl text-gray-300 font-medium">ORDER TO ORDER CHECK - ITAPETININGA</p>
