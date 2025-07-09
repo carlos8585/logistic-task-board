@@ -169,9 +169,13 @@ const Gestor = () => {
                   </div>
                   
                   {/* Etapa */}
-                  <div className="text-xs">
-                    <div className="font-medium text-blue-400">{atividade.transportadora_nome}</div>
-                    <div className="text-xs text-gray-400">{atividade.etapa}</div>
+                  <div className="text-xs space-y-1">
+                    <div className="font-medium text-blue-400 break-words">
+                      {atividade.transportadora_nome}
+                    </div>
+                    <div className="text-xs text-gray-400 break-words">
+                      {atividade.etapa}
+                    </div>
                   </div>
                   
                   {/* Início */}
