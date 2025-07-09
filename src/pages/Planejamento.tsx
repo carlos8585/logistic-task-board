@@ -62,6 +62,57 @@ const etapasDisponiveis = [
   "Liberação de container/ Lacre / Foto"
 ];
 
+// Tempos por etapa (em minutos)
+const temposPorEtapa: Record<string, number> = {
+  "Picking - Área de Saída": 0.5, // 30 segundos por unidade
+  "Picking - Reserva": 2, // 2 min por pallet
+  "Picking - Cons": 3, // 3 min por pallet
+  "Picking - Troca de Palete": 4, // 4 min por pallet
+  "Conferência - Carga Fracionada": 1, // 1 min por pallet
+  "Conferência - Carga Matriz": 1, // 1 min por pallet
+  "Conferência - Carga Direta": 1, // 1 min por pallet
+  "Contagem Cega do Box": 1, // 1 min por pallet
+  "Carregamento - Fracionado": 2, // 2 min por pallet
+  "Carregamento - Transferência": 2, // 2 min por pallet
+  "Emissão de Nota Fiscal - Transferência": 10, // 10 min por pallet
+  "Emissão de Nota Fiscal - Fracionado": 10, // 10 min por pallet
+  "Emissão de Nota Fiscal - Carga Direta": 10, // 10 min por pallet
+  "Pre. de carga exportação": 4, // 4 min por pallet
+  "Carga fracionada -Etiquetagem": 1.5, // 1,30 min por pallet
+  "END. Bertolini": 1.5, // 1,30 min por pallet
+  "END. 97": 1, // 1 min por pallet
+  "Armagenamento Bertolini": 2, // 2 min por pallet
+  "Armagenamento 97": 2, // 2 min por pallet
+  "Invetário dos corredores": 45, // 45 min fixo
+  "Descarga Bertoline": 2, // 2 min por pallet
+  "Preenchimento Mapa Bertolini": 1, // 1 min por pallet
+  "Preenchimento RR Bertolini": 30, // 30 min fixo
+  "Inspeção/Foto/Checklist/ container 40": 35, // 35 min fixo
+  "Inspeção/Foto/Checklist/ container 20": 25, // 25 min fixo
+  "Liberação de container/ Lacre / Foto": 7, // 7 min fixo
+};
+
+// Etapas que têm tempo fixo (não multiplicam pelo volume)
+const etapasTempoFixo = [
+  "Invetário dos corredores",
+  "Preenchimento RR Bertolini", 
+  "Inspeção/Foto/Checklist/ container 40",
+  "Inspeção/Foto/Checklist/ container 20",
+  "Liberação de container/ Lacre / Foto"
+];
+
+const calcularTempoTotal = (etapa: string, volume: number): number => {
+  const tempoPorUnidade = temposPorEtapa[etapa] || 1;
+  
+  // Se é uma etapa de tempo fixo, não multiplica pelo volume
+  if (etapasTempoFixo.includes(etapa)) {
+    return tempoPorUnidade;
+  }
+  
+  // Para "Picking - Área de Saída", o volume representa unidades, não pallets
+  return tempoPorUnidade * volume;
+};
+
 const Planejamento = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -140,7 +191,9 @@ const Planejamento = () => {
     }
 
     const agora = new Date();
-    const horarioPlaneado = new Date(agora.getTime() + 60 * 60 * 1000); // +1 hora
+    const volumeNum = parseInt(volume);
+    const tempoTotalMinutos = calcularTempoTotal(etapa, volumeNum);
+    const horarioPlaneado = new Date(agora.getTime() + tempoTotalMinutos * 60 * 1000);
 
     const novaAtividade: Atividade = {
       id: Date.now().toString(),
@@ -148,7 +201,7 @@ const Planejamento = () => {
       transportadoraNome: selectedTransportadora!.nome,
       operador,
       etapa,
-      volume: parseInt(volume),
+      volume: volumeNum,
       horarioSalvo: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       horarioPlaneado: horarioPlaneado.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       status: 'planejado'
@@ -479,18 +532,35 @@ const Planejamento = () => {
                 <Label htmlFor="volume" className="text-gray-300 text-sm font-medium flex items-center gap-2">
                   <span className="text-red-400">*</span>
                   <Package className="h-3 w-3" />
-                  Volume
+                  {etapa === "Picking - Área de Saída" ? "Unidades" : "Volume (pallets)"}
                 </Label>
                 <Input
                   id="volume"
                   type="number"
                   value={volume}
                   onChange={(e) => setVolume(e.target.value)}
-                  placeholder="Qtd pallets"
+                  placeholder={etapa === "Picking - Área de Saída" ? "Qtd unidades" : "Qtd pallets"}
                   className="border-gray-600 bg-gray-700/50 text-gray-100 placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400/20 text-sm"
                 />
               </div>
             </div>
+
+            {etapa && volume && (
+              <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-3">
+                <div className="text-sm text-blue-300">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Clock className="h-3 w-3" />
+                    <span className="font-medium">Tempo Estimado:</span>
+                  </div>
+                  <div className="text-blue-200">
+                    {etapasTempoFixo.includes(etapa) 
+                      ? `${temposPorEtapa[etapa]} minutos (tempo fixo)`
+                      : `${calcularTempoTotal(etapa, parseInt(volume) || 0)} minutos (${temposPorEtapa[etapa]} min × ${volume})`
+                    }
+                  </div>
+                </div>
+              </div>
+            )}
             
             <div className="flex justify-center pt-4">
               <Button 
