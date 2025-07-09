@@ -1,13 +1,14 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Ship, Users, Settings } from "lucide-react";
+
 const Index = () => {
   const navigate = useNavigate();
-  return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex items-center justify-center p-4">
-      {/* Background container image with darker overlay */}
-      <div className="absolute inset-0 bg-[url('/lovable-uploads/5926c171-d1a4-48f1-9fb7-2ae0a2ee8bde.png')] bg-cover bg-center opacity-10"></div>
-      
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex items-center justify-center p-4">
       <div className="relative z-10 w-full max-w-4xl">
         {/* Header */}
         <div className="text-center mb-16">
@@ -52,12 +53,9 @@ const Index = () => {
             </CardContent>
           </Card>
         </div>
-
-        {/* Footer */}
-        <div className="text-center mt-16">
-          
-        </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
