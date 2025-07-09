@@ -10,29 +10,14 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, Check, Edit, Clock, User, Package, Calendar, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 
-interface Transportadora {
-  id: string;
-  nome: string;
-  horaSaida: string;
-  cargaPara: string;
-  dataAdicao: string;
+interface Transportadora extends Tables<'transportadoras'> {
   selected?: boolean;
 }
 
-interface Atividade {
-  id: string;
-  transportadoraId: string;
-  transportadoraNome: string;
-  operador: string;
-  etapa: string;
-  volume: number;
-  horarioSalvo: string;
-  horarioPlaneado: string;
-  status: 'planejado' | 'concluido';
-  motivoAtraso?: string;
-  horarioFinalizacao?: string;
-}
+interface Atividade extends Tables<'atividades'> {}
 
 const etapasDisponiveis = [
   "Picking - Área de Saída",
@@ -137,19 +122,61 @@ const Planejamento = () => {
   const [etapa, setEtapa] = useState("");
   const [volume, setVolume] = useState("");
 
+  // Carregar dados do Supabase
+  useEffect(() => {
+    loadTransportadoras();
+    loadAtividades();
+  }, []);
+
+  const loadTransportadoras = async () => {
+    const { data, error } = await supabase
+      .from('transportadoras')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Erro ao carregar transportadoras:', error);
+      toast({
+        title: "Erro ao carregar transportadoras",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      setTransportadoras(data || []);
+    }
+  };
+
+  const loadAtividades = async () => {
+    const { data, error } = await supabase
+      .from('atividades')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Erro ao carregar atividades:', error);
+      toast({
+        title: "Erro ao carregar atividades",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      setAtividades(data || []);
+    }
+  };
+
   // Função para verificar se uma atividade está em atraso
   const isAtrasada = (atividade: Atividade): boolean => {
     if (atividade.status === 'concluido') return false;
     
     const agora = new Date();
-    const [horas, minutos] = atividade.horarioPlaneado.split(':').map(Number);
+    const [horas, minutos] = atividade.horario_planejado.split(':').map(Number);
     const horarioPlaneado = new Date();
     horarioPlaneado.setHours(horas, minutos, 0, 0);
     
     return agora > horarioPlaneado;
   };
 
-  const handleAddTransportadora = () => {
+  const handleAddTransportadora = async () => {
     if (!nomeTransportadora || !horaSaida || !cargaPara) {
       toast({
         title: "Campos obrigatórios",
@@ -159,23 +186,34 @@ const Planejamento = () => {
       return;
     }
 
-    const novaTransportadora: Transportadora = {
-      id: Date.now().toString(),
-      nome: nomeTransportadora,
-      horaSaida,
-      cargaPara,
-      dataAdicao: new Date().toLocaleDateString('pt-BR')
-    };
+    const { data, error } = await supabase
+      .from('transportadoras')
+      .insert({
+        nome: nomeTransportadora,
+        hora_saida: horaSaida,
+        carga_para: cargaPara
+      })
+      .select()
+      .single();
 
-    setTransportadoras([...transportadoras, novaTransportadora]);
-    setNomeTransportadora("");
-    setHoraSaida("");
-    setCargaPara("");
-    
-    toast({
-      title: "Transportadora adicionada",
-      description: `${nomeTransportadora} foi adicionada com sucesso`
-    });
+    if (error) {
+      console.error('Erro ao adicionar transportadora:', error);
+      toast({
+        title: "Erro ao adicionar transportadora",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      setTransportadoras([data, ...transportadoras]);
+      setNomeTransportadora("");
+      setHoraSaida("");
+      setCargaPara("");
+      
+      toast({
+        title: "Transportadora adicionada",
+        description: `${nomeTransportadora} foi adicionada com sucesso`
+      });
+    }
   };
 
   const handleSelectTransportadora = (transportadora: Transportadora) => {
@@ -197,7 +235,7 @@ const Planejamento = () => {
     setShowAtividadeDialog(true);
   };
 
-  const handleSaveAtividade = () => {
+  const handleSaveAtividade = async () => {
     if (!operador || !etapa || !volume) {
       toast({
         title: "Campos obrigatórios",
@@ -212,28 +250,42 @@ const Planejamento = () => {
     const tempoTotalMinutos = calcularTempoTotal(etapa, volumeNum);
     const horarioPlaneado = new Date(agora.getTime() + tempoTotalMinutos * 60 * 1000);
 
-    const novaAtividade: Atividade = {
-      id: Date.now().toString(),
-      transportadoraId: selectedTransportadora!.id,
-      transportadoraNome: selectedTransportadora!.nome,
+    const novaAtividade = {
+      transportadora_id: selectedTransportadora!.id,
+      transportadora_nome: selectedTransportadora!.nome,
       operador,
       etapa,
       volume: volumeNum,
-      horarioSalvo: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      horarioPlaneado: horarioPlaneado.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      status: 'planejado'
+      horario_salvo: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      horario_planejado: horarioPlaneado.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      status: 'planejado' as const
     };
 
-    setAtividades([...atividades, novaAtividade]);
-    setShowAtividadeDialog(false);
-    setOperador("");
-    setEtapa("");
-    setVolume("");
-    
-    toast({
-      title: "Atividade adicionada",
-      description: `Atividade ${etapa} foi adicionada com sucesso`
-    });
+    const { data, error } = await supabase
+      .from('atividades')
+      .insert(novaAtividade)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Erro ao adicionar atividade:', error);
+      toast({
+        title: "Erro ao adicionar atividade",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      setAtividades([data, ...atividades]);
+      setShowAtividadeDialog(false);
+      setOperador("");
+      setEtapa("");
+      setVolume("");
+      
+      toast({
+        title: "Atividade adicionada",
+        description: `Atividade ${etapa} foi adicionada com sucesso`
+      });
+    }
   };
 
   const handleFinalizarAtividade = (atividade: Atividade) => {
@@ -247,30 +299,53 @@ const Planejamento = () => {
     }
   };
 
-  const handleFinalizarComAtraso = () => {
+  const handleFinalizarComAtraso = async () => {
     if (atividadeToFinalize && motivoAtraso.trim()) {
       const agora = new Date();
-      setAtividades(prev => 
-        prev.map(a => 
-          a.id === atividadeToFinalize.id 
-            ? { 
-                ...a, 
-                status: 'concluido' as const,
-                motivoAtraso: motivoAtraso.trim(),
-                horarioFinalizacao: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-              }
-            : a
-        )
-      );
+      const horarioFinalizacao = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       
-      setShowAtrasoDialog(false);
-      setAtividadeToFinalize(null);
-      setMotivoAtraso("");
-      
-      toast({
-        title: "Atividade finalizada",
-        description: `A tarefa ${atividadeToFinalize.etapa} foi finalizada com atraso registrado`
-      });
+      const { error } = await supabase
+        .from('atividades')
+        .update({ 
+          status: 'concluido',
+          motivo_atraso: motivoAtraso.trim(),
+          horario_finalizacao: horarioFinalizacao,
+          tempo_match: false
+        })
+        .eq('id', atividadeToFinalize.id);
+
+      if (error) {
+        console.error('Erro ao finalizar atividade:', error);
+        toast({
+          title: "Erro ao finalizar atividade",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        // Atualizar estado local
+        setAtividades(prev => 
+          prev.map(a => 
+            a.id === atividadeToFinalize.id 
+              ? { 
+                  ...a, 
+                  status: 'concluido' as const,
+                  motivo_atraso: motivoAtraso.trim(),
+                  horario_finalizacao: horarioFinalizacao,
+                  tempo_match: false
+                }
+              : a
+          )
+        );
+        
+        setShowAtrasoDialog(false);
+        setAtividadeToFinalize(null);
+        setMotivoAtraso("");
+        
+        toast({
+          title: "Atividade finalizada",
+          description: `A tarefa ${atividadeToFinalize.etapa} foi finalizada com atraso registrado`
+        });
+      }
     } else if (!motivoAtraso.trim()) {
       toast({
         title: "Campo obrigatório",
@@ -280,27 +355,50 @@ const Planejamento = () => {
     }
   };
 
-  const confirmFinalizarAtividade = () => {
+  const confirmFinalizarAtividade = async () => {
     if (atividadeToFinalize) {
       const agora = new Date();
-      setAtividades(prev => 
-        prev.map(a => 
-          a.id === atividadeToFinalize.id 
-            ? { 
-                ...a, 
-                status: 'concluido' as const,
-                horarioFinalizacao: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-              }
-            : a
-        )
-      );
-      setShowFinalizarDialog(false);
-      setAtividadeToFinalize(null);
+      const horarioFinalizacao = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       
-      toast({
-        title: "Atividade finalizada",
-        description: `A tarefa ${atividadeToFinalize.etapa} foi finalizada`
-      });
+      const { error } = await supabase
+        .from('atividades')
+        .update({ 
+          status: 'concluido',
+          horario_finalizacao: horarioFinalizacao,
+          tempo_match: true
+        })
+        .eq('id', atividadeToFinalize.id);
+
+      if (error) {
+        console.error('Erro ao finalizar atividade:', error);
+        toast({
+          title: "Erro ao finalizar atividade",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        // Atualizar estado local
+        setAtividades(prev => 
+          prev.map(a => 
+            a.id === atividadeToFinalize.id 
+              ? { 
+                  ...a, 
+                  status: 'concluido' as const,
+                  horario_finalizacao: horarioFinalizacao,
+                  tempo_match: true
+                }
+              : a
+          )
+        );
+        
+        setShowFinalizarDialog(false);
+        setAtividadeToFinalize(null);
+        
+        toast({
+          title: "Atividade finalizada",
+          description: `A tarefa ${atividadeToFinalize.etapa} foi finalizada`
+        });
+      }
     }
   };
 
@@ -419,7 +517,7 @@ const Planejamento = () => {
                       <div className="flex items-center justify-between mb-2">
                         <Edit className="h-3 w-3 text-blue-400" />
                         <Badge variant="secondary" className="text-xs bg-gray-700 text-gray-300">
-                          {transportadora.dataAdicao}
+                          {new Date(transportadora.data_adicao).toLocaleDateString('pt-BR')}
                         </Badge>
                       </div>
                       <div className="font-medium text-gray-100 mb-1 text-sm">
@@ -427,10 +525,10 @@ const Planejamento = () => {
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="text-lg font-bold text-blue-400">
-                          {transportadora.horaSaida}
+                          {transportadora.hora_saida}
                         </div>
                         <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
-                          {transportadora.cargaPara}
+                          {transportadora.carga_para}
                         </Badge>
                       </div>
                     </div>
@@ -492,7 +590,7 @@ const Planejamento = () => {
                           </div>
                           <div className="text-xs text-gray-400 flex items-center gap-1">
                             <Package className="h-3 w-3" />
-                            {atividade.transportadoraNome}
+                            {atividade.transportadora_nome}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -500,12 +598,12 @@ const Planejamento = () => {
                           <span className="font-medium text-gray-200 text-sm">{atividade.operador}</span>
                         </div>
                         <div className="text-xs">
-                          <div className="font-medium text-green-400">Início: {atividade.horarioSalvo}</div>
+                          <div className="font-medium text-green-400">Início: {atividade.horario_salvo}</div>
                           <div className={`${isAtrasada(atividade) ? 'text-red-400' : 'text-gray-400'}`}>
-                            Fim: {atividade.horarioPlaneado}
+                            Fim: {atividade.horario_planejado}
                           </div>
-                          {atividade.horarioFinalizacao && (
-                            <div className="text-blue-400">Real: {atividade.horarioFinalizacao}</div>
+                          {atividade.horario_finalizacao && (
+                            <div className="text-blue-400">Real: {atividade.horario_finalizacao}</div>
                           )}
                         </div>
                         <div className="text-center">
@@ -563,7 +661,7 @@ const Planejamento = () => {
               <div className="space-y-2">
                 <Label className="text-gray-300 text-sm font-medium">Hora de Saída</Label>
                 <Input 
-                  value={selectedTransportadora?.horaSaida || ""} 
+                  value={selectedTransportadora?.hora_saida || ""} 
                   disabled 
                   className="bg-gray-700/50 border-gray-600 text-gray-300 text-sm"
                 />
@@ -696,7 +794,7 @@ const Planejamento = () => {
               <p className="text-gray-300 text-sm mb-2">A tarefa está em atraso:</p>
               <p className="font-medium text-gray-100 text-sm mb-1">{atividadeToFinalize?.etapa}</p>
               <p className="text-red-400 text-xs">
-                Previsto para: {atividadeToFinalize?.horarioPlaneado}
+                Previsto para: {atividadeToFinalize?.horario_planejado}
               </p>
             </div>
             

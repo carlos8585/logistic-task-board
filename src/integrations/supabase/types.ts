@@ -14,7 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      atividades: {
+        Row: {
+          created_at: string
+          etapa: string
+          horario_finalizacao: string | null
+          horario_planejado: string
+          horario_salvo: string
+          id: string
+          motivo_atraso: string | null
+          operador: string
+          status: string
+          tempo_match: boolean | null
+          transportadora_id: string | null
+          transportadora_nome: string
+          updated_at: string
+          volume: number
+        }
+        Insert: {
+          created_at?: string
+          etapa: string
+          horario_finalizacao?: string | null
+          horario_planejado: string
+          horario_salvo: string
+          id?: string
+          motivo_atraso?: string | null
+          operador: string
+          status?: string
+          tempo_match?: boolean | null
+          transportadora_id?: string | null
+          transportadora_nome: string
+          updated_at?: string
+          volume: number
+        }
+        Update: {
+          created_at?: string
+          etapa?: string
+          horario_finalizacao?: string | null
+          horario_planejado?: string
+          horario_salvo?: string
+          id?: string
+          motivo_atraso?: string | null
+          operador?: string
+          status?: string
+          tempo_match?: boolean | null
+          transportadora_id?: string | null
+          transportadora_nome?: string
+          updated_at?: string
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atividades_transportadora_id_fkey"
+            columns: ["transportadora_id"]
+            isOneToOne: false
+            referencedRelation: "transportadoras"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transportadoras: {
+        Row: {
+          carga_para: string
+          created_at: string
+          data_adicao: string
+          hora_saida: string
+          id: string
+          nome: string
+        }
+        Insert: {
+          carga_para: string
+          created_at?: string
+          data_adicao?: string
+          hora_saida: string
+          id?: string
+          nome: string
+        }
+        Update: {
+          carga_para?: string
+          created_at?: string
+          data_adicao?: string
+          hora_saida?: string
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
