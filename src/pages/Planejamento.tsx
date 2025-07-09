@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Check, Edit, Clock, User, Package, Calendar } from "lucide-react";
+import { ArrowLeft, Plus, Check, Edit, Clock, User, Package, Calendar, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Transportadora {
@@ -29,6 +30,8 @@ interface Atividade {
   horarioSalvo: string;
   horarioPlaneado: string;
   status: 'planejado' | 'concluido';
+  motivoAtraso?: string;
+  horarioFinalizacao?: string;
 }
 
 const etapasDisponiveis = [
@@ -122,7 +125,9 @@ const Planejamento = () => {
   const [selectedTransportadora, setSelectedTransportadora] = useState<Transportadora | null>(null);
   const [showAtividadeDialog, setShowAtividadeDialog] = useState(false);
   const [showFinalizarDialog, setShowFinalizarDialog] = useState(false);
+  const [showAtrasoDialog, setShowAtrasoDialog] = useState(false);
   const [atividadeToFinalize, setAtividadeToFinalize] = useState<Atividade | null>(null);
+  const [motivoAtraso, setMotivoAtraso] = useState("");
   
   // Form states
   const [nomeTransportadora, setNomeTransportadora] = useState("");
@@ -131,6 +136,18 @@ const Planejamento = () => {
   const [operador, setOperador] = useState("");
   const [etapa, setEtapa] = useState("");
   const [volume, setVolume] = useState("");
+
+  // Função para verificar se uma atividade está em atraso
+  const isAtrasada = (atividade: Atividade): boolean => {
+    if (atividade.status === 'concluido') return false;
+    
+    const agora = new Date();
+    const [horas, minutos] = atividade.horarioPlaneado.split(':').map(Number);
+    const horarioPlaneado = new Date();
+    horarioPlaneado.setHours(horas, minutos, 0, 0);
+    
+    return agora > horarioPlaneado;
+  };
 
   const handleAddTransportadora = () => {
     if (!nomeTransportadora || !horaSaida || !cargaPara) {
@@ -221,15 +238,59 @@ const Planejamento = () => {
 
   const handleFinalizarAtividade = (atividade: Atividade) => {
     setAtividadeToFinalize(atividade);
-    setShowFinalizarDialog(true);
+    
+    // Verifica se está em atraso
+    if (isAtrasada(atividade)) {
+      setShowAtrasoDialog(true);
+    } else {
+      setShowFinalizarDialog(true);
+    }
+  };
+
+  const handleFinalizarComAtraso = () => {
+    if (atividadeToFinalize && motivoAtraso.trim()) {
+      const agora = new Date();
+      setAtividades(prev => 
+        prev.map(a => 
+          a.id === atividadeToFinalize.id 
+            ? { 
+                ...a, 
+                status: 'concluido' as const,
+                motivoAtraso: motivoAtraso.trim(),
+                horarioFinalizacao: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+              }
+            : a
+        )
+      );
+      
+      setShowAtrasoDialog(false);
+      setAtividadeToFinalize(null);
+      setMotivoAtraso("");
+      
+      toast({
+        title: "Atividade finalizada",
+        description: `A tarefa ${atividadeToFinalize.etapa} foi finalizada com atraso registrado`
+      });
+    } else if (!motivoAtraso.trim()) {
+      toast({
+        title: "Campo obrigatório",
+        description: "Por favor, informe o motivo do atraso",
+        variant: "destructive"
+      });
+    }
   };
 
   const confirmFinalizarAtividade = () => {
     if (atividadeToFinalize) {
+      const agora = new Date();
       setAtividades(prev => 
         prev.map(a => 
           a.id === atividadeToFinalize.id 
-            ? { ...a, status: 'concluido' as const }
+            ? { 
+                ...a, 
+                status: 'concluido' as const,
+                horarioFinalizacao: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+              }
             : a
         )
       );
@@ -418,10 +479,17 @@ const Planejamento = () => {
                     atividades.map((atividade) => (
                       <div 
                         key={atividade.id}
-                        className="p-3 border-b border-gray-700 grid grid-cols-6 gap-3 items-center hover:bg-gray-700/30 transition-colors"
+                        className={`p-3 border-b border-gray-700 grid grid-cols-6 gap-3 items-center hover:bg-gray-700/30 transition-colors ${
+                          isAtrasada(atividade) ? 'bg-red-900/20 border-red-700/50' : ''
+                        }`}
                       >
                         <div className="col-span-2">
-                          <div className="font-medium text-gray-100 mb-1 text-sm">{atividade.etapa}</div>
+                          <div className="font-medium text-gray-100 mb-1 text-sm flex items-center gap-2">
+                            {atividade.etapa}
+                            {isAtrasada(atividade) && (
+                              <AlertTriangle className="h-3 w-3 text-red-400" />
+                            )}
+                          </div>
                           <div className="text-xs text-gray-400 flex items-center gap-1">
                             <Package className="h-3 w-3" />
                             {atividade.transportadoraNome}
@@ -433,11 +501,16 @@ const Planejamento = () => {
                         </div>
                         <div className="text-xs">
                           <div className="font-medium text-green-400">Início: {atividade.horarioSalvo}</div>
-                          <div className="text-gray-400">Fim: {atividade.horarioPlaneado}</div>
+                          <div className={`${isAtrasada(atividade) ? 'text-red-400' : 'text-gray-400'}`}>
+                            Fim: {atividade.horarioPlaneado}
+                          </div>
+                          {atividade.horarioFinalizacao && (
+                            <div className="text-blue-400">Real: {atividade.horarioFinalizacao}</div>
+                          )}
                         </div>
                         <div className="text-center">
                           <Badge variant="outline" className="font-medium text-xs border-gray-600 text-gray-300">
-                            {atividade.volume} pallets
+                            {atividade.volume} {atividade.etapa === "Picking - Área de Saída" ? "unid." : "pallets"}
                           </Badge>
                         </div>
                         <div className="flex justify-center">
@@ -450,7 +523,9 @@ const Planejamento = () => {
                               size="sm"
                               variant="outline"
                               onClick={() => handleFinalizarAtividade(atividade)}
-                              className="text-xs hover:bg-blue-900/20 hover:border-blue-400 border-gray-600 text-gray-300"
+                              className={`text-xs hover:bg-blue-900/20 hover:border-blue-400 border-gray-600 text-gray-300 ${
+                                isAtrasada(atividade) ? 'border-red-400 text-red-300 hover:bg-red-900/20' : ''
+                              }`}
                             >
                               Finalizar
                             </Button>
@@ -602,6 +677,61 @@ const Planejamento = () => {
             >
               <Check className="h-3 w-3 mr-2" />
               Confirmar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de Atraso */}
+      <Dialog open={showAtrasoDialog} onOpenChange={setShowAtrasoDialog}>
+        <DialogContent className="max-w-md bg-gray-800 border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="text-center text-lg text-gray-100 flex items-center justify-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-400" />
+              Atividade em Atraso
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="text-center">
+              <p className="text-gray-300 text-sm mb-2">A tarefa está em atraso:</p>
+              <p className="font-medium text-gray-100 text-sm mb-1">{atividadeToFinalize?.etapa}</p>
+              <p className="text-red-400 text-xs">
+                Previsto para: {atividadeToFinalize?.horarioPlaneado}
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="motivoAtraso" className="text-gray-300 text-sm font-medium">
+                Motivo do atraso *
+              </Label>
+              <Textarea
+                id="motivoAtraso"
+                value={motivoAtraso}
+                onChange={(e) => setMotivoAtraso(e.target.value)}
+                placeholder="Descreva o motivo do atraso..."
+                className="border-gray-600 bg-gray-700/50 text-gray-100 placeholder:text-gray-400 focus:border-red-400 focus:ring-red-400/20 text-sm"
+                rows={3}
+              />
+            </div>
+          </div>
+          
+          <div className="flex justify-center space-x-3 pt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowAtrasoDialog(false);
+                setMotivoAtraso("");
+              }}
+              className="px-4 text-sm border-gray-600 text-gray-300 hover:bg-gray-700"
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleFinalizarComAtraso}
+              className="bg-red-600 hover:bg-red-700 px-4 text-sm"
+            >
+              <Check className="h-3 w-3 mr-2" />
+              Finalizar com Atraso
             </Button>
           </div>
         </DialogContent>
