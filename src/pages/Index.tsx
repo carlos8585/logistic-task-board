@@ -1,14 +1,10 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Ship, Users, Settings } from "lucide-react";
-
 const Index = () => {
   const navigate = useNavigate();
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex items-center justify-center p-4">
+  return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex items-center justify-center p-4">
       {/* Background container image with darker overlay */}
       <div className="absolute inset-0 bg-[url('/lovable-uploads/5926c171-d1a4-48f1-9fb7-2ae0a2ee8bde.png')] bg-cover bg-center opacity-10"></div>
       
@@ -35,10 +31,7 @@ const Index = () => {
               <p className="text-gray-300 mb-8 text-lg leading-relaxed">
                 Acesso para planejamento e controle de atividades operacionais
               </p>
-              <Button 
-                onClick={() => navigate('/planejamento')}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 text-xl transition-all duration-300 shadow-lg hover:shadow-blue-500/30"
-              >
+              <Button onClick={() => navigate('/planejamento')} className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 text-xl transition-all duration-300 shadow-lg hover:shadow-blue-500/30">
                 Acessar Sistema
               </Button>
             </CardContent>
@@ -53,10 +46,7 @@ const Index = () => {
               <p className="text-gray-300 mb-8 text-lg leading-relaxed">
                 Acesso para verificação e aprovação de atividades planejadas
               </p>
-              <Button 
-                onClick={() => navigate('/gestor')}
-                className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-4 text-xl transition-all duration-300 shadow-lg hover:shadow-green-500/30"
-              >
+              <Button onClick={() => navigate('/gestor')} className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-4 text-xl transition-all duration-300 shadow-lg hover:shadow-green-500/30">
                 Acessar Gestão
               </Button>
             </CardContent>
@@ -65,15 +55,9 @@ const Index = () => {
 
         {/* Footer */}
         <div className="text-center mt-16">
-          <div className="flex justify-center items-center space-x-8">
-            <span className="text-gray-400 font-semibold text-lg hover:text-white transition-colors cursor-pointer">PT</span>
-            <span className="text-gray-400 font-semibold text-lg hover:text-white transition-colors cursor-pointer">ESP</span>
-            <span className="text-gray-400 font-semibold text-lg hover:text-white transition-colors cursor-pointer">ENG</span>
-          </div>
+          
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
