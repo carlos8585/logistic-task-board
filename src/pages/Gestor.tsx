@@ -2,13 +2,15 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Check, X, FileText, Clock } from "lucide-react";
+import { ArrowLeft, Check, X, FileText, Clock, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+
 interface AtividadeGestor extends Tables<'atividades'> {}
+
 const Gestor = () => {
   const navigate = useNavigate();
   const {
@@ -123,7 +125,16 @@ const Gestor = () => {
             </Button>
             <h1 className="text-xl font-bold text-white">CHECK - FAC / COO</h1>
           </div>
-          <div className="bg-red-600 text-white px-3 py-1 rounded text-sm">3M</div>
+          <div className="flex items-center space-x-3">
+            <Button
+              onClick={() => navigate('/graficos')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm"
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Gráficos
+            </Button>
+            <div className="bg-red-600 text-white px-3 py-1 rounded text-sm">3M</div>
+          </div>
         </div>
 
         {/* Main Content */}
@@ -255,4 +266,5 @@ const Gestor = () => {
       </div>
     </div>;
 };
+
 export default Gestor;
