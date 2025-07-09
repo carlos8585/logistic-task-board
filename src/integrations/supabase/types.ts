@@ -22,6 +22,7 @@ export type Database = {
           horario_planejado: string
           horario_salvo: string
           id: string
+          id_sequencial: number
           motivo_atraso: string | null
           operador: string
           status: string
@@ -38,6 +39,7 @@ export type Database = {
           horario_planejado: string
           horario_salvo: string
           id?: string
+          id_sequencial?: number
           motivo_atraso?: string | null
           operador: string
           status?: string
@@ -54,6 +56,7 @@ export type Database = {
           horario_planejado?: string
           horario_salvo?: string
           id?: string
+          id_sequencial?: number
           motivo_atraso?: string | null
           operador?: string
           status?: string
