@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -295,8 +294,8 @@ const Gestor = () => {
           </CardContent>
         </Card>
 
-        {/* Summary Stats */}
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+        {/* Summary Stats - Only 2 cards */}
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
           <Card className="bg-green-900/20 border-green-700/50">
             <CardContent className="p-3 text-center">
               <div className="text-lg font-bold text-green-400">
@@ -312,15 +311,6 @@ const Gestor = () => {
                 {atividades.filter(a => a.status === 'concluido').length}
               </div>
               <div className="text-yellow-300 text-xs">Atividades Pendentes</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-red-900/20 border-red-700/50">
-            <CardContent className="p-3 text-center">
-              <div className="text-lg font-bold text-red-400">
-                {atividades.filter(a => a.status === 'rejeitado').length}
-              </div>
-              <div className="text-red-300 text-xs">Atividades Rejeitadas</div>
             </CardContent>
           </Card>
         </div>
