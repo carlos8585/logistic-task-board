@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,27 +7,25 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
-
 interface AtividadeGestor extends Tables<'atividades'> {}
-
 const Gestor = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  
+  const {
+    toast
+  } = useToast();
   const [atividades, setAtividades] = useState<AtividadeGestor[]>([]);
 
   // Carregar atividades do Supabase
   useEffect(() => {
     loadAtividades();
   }, []);
-
   const loadAtividades = async () => {
-    const { data, error } = await supabase
-      .from('atividades')
-      .select('*')
-      .eq('status', 'concluido')
-      .order('created_at', { ascending: false });
-    
+    const {
+      data,
+      error
+    } = await supabase.from('atividades').select('*').eq('status', 'concluido').order('created_at', {
+      ascending: false
+    });
     if (error) {
       console.error('Erro ao carregar atividades:', error);
       toast({
@@ -45,13 +42,12 @@ const Gestor = () => {
       setAtividades(atividadesFormatadas);
     }
   };
-
   const handleAprovar = async (id: string) => {
-    const { error } = await supabase
-      .from('atividades')
-      .update({ status: 'aprovado' })
-      .eq('id', id);
-
+    const {
+      error
+    } = await supabase.from('atividades').update({
+      status: 'aprovado'
+    }).eq('id', id);
     if (error) {
       console.error('Erro ao aprovar atividade:', error);
       toast({
@@ -60,27 +56,22 @@ const Gestor = () => {
         variant: "destructive"
       });
     } else {
-      setAtividades(prev => 
-        prev.map(atividade => 
-          atividade.id === id 
-            ? { ...atividade, status: 'aprovado' as const }
-            : atividade
-        )
-      );
-      
+      setAtividades(prev => prev.map(atividade => atividade.id === id ? {
+        ...atividade,
+        status: 'aprovado' as const
+      } : atividade));
       toast({
         title: "Atividade aprovada",
         description: "A atividade foi aprovada com sucesso"
       });
     }
   };
-
   const handleRejeitar = async (id: string) => {
-    const { error } = await supabase
-      .from('atividades')
-      .update({ status: 'rejeitado' })
-      .eq('id', id);
-
+    const {
+      error
+    } = await supabase.from('atividades').update({
+      status: 'rejeitado'
+    }).eq('id', id);
     if (error) {
       console.error('Erro ao rejeitar atividade:', error);
       toast({
@@ -89,14 +80,10 @@ const Gestor = () => {
         variant: "destructive"
       });
     } else {
-      setAtividades(prev => 
-        prev.map(atividade => 
-          atividade.id === id 
-            ? { ...atividade, status: 'rejeitado' as const }
-            : atividade
-        )
-      );
-      
+      setAtividades(prev => prev.map(atividade => atividade.id === id ? {
+        ...atividade,
+        status: 'rejeitado' as const
+      } : atividade));
       toast({
         title: "Atividade rejeitada",
         description: "A atividade foi rejeitada",
@@ -104,35 +91,32 @@ const Gestor = () => {
       });
     }
   };
-
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'aprovado': return 'bg-green-500';
-      case 'rejeitado': return 'bg-red-500';
-      default: return 'bg-yellow-500';
+      case 'aprovado':
+        return 'bg-green-500';
+      case 'rejeitado':
+        return 'bg-red-500';
+      default:
+        return 'bg-yellow-500';
     }
   };
-
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'aprovado': return 'Aprovado';
-      case 'rejeitado': return 'Rejeitado';
-      default: return 'Pendente';
+      case 'aprovado':
+        return 'Aprovado';
+      case 'rejeitado':
+        return 'Rejeitado';
+      default:
+        return 'Pendente';
     }
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black p-4">
+  return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => navigate('/')}
-              className="text-gray-300 hover:bg-white/10 mr-3 hover:text-white"
-            >
+            <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="text-gray-300 hover:bg-white/10 mr-3 hover:text-white">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
@@ -157,19 +141,10 @@ const Gestor = () => {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            {atividades.length === 0 ? (
-              <div className="p-8 text-center text-gray-400">
+            {atividades.length === 0 ? <div className="p-8 text-center text-gray-400">
                 <Clock className="h-10 w-10 mx-auto mb-3 opacity-50" />
                 <p className="text-sm">Nenhuma atividade para aprovação</p>
-              </div>
-            ) : (
-              atividades.map((atividade, index) => (
-                <div 
-                  key={atividade.id}
-                  className={`grid grid-cols-9 gap-2 p-3 border-b border-gray-700 items-center hover:bg-gray-700/30 ${
-                    index % 2 === 0 ? 'bg-gray-800/50' : 'bg-gray-800/80'
-                  }`}
-                >
+              </div> : atividades.map((atividade, index) => <div key={atividade.id} className={`grid grid-cols-9 gap-2 p-3 border-b border-gray-700 items-center hover:bg-gray-700/30 ${index % 2 === 0 ? 'bg-gray-800/50' : 'bg-gray-800/80'}`}>
                   {/* ID */}
                   <div className="text-xs font-mono text-gray-300">
                     {atividade.id.slice(0, 8)}
@@ -197,15 +172,13 @@ const Gestor = () => {
                   
                   {/* Tempo */}
                   <div className="text-xs font-medium text-gray-200">
-                    {atividade.horario_finalizacao && atividade.horario_salvo ? (
-                      (() => {
-                        const inicio = new Date(`2000-01-01 ${atividade.horario_salvo}`);
-                        const fim = new Date(`2000-01-01 ${atividade.horario_finalizacao}`);
-                        const diffMs = fim.getTime() - inicio.getTime();
-                        const diffMin = Math.round(diffMs / (1000 * 60));
-                        return `${diffMin} min`;
-                      })()
-                    ) : '-'}
+                    {atividade.horario_finalizacao && atividade.horario_salvo ? (() => {
+                const inicio = new Date(`2000-01-01 ${atividade.horario_salvo}`);
+                const fim = new Date(`2000-01-01 ${atividade.horario_finalizacao}`);
+                const diffMs = fim.getTime() - inicio.getTime();
+                const diffMin = Math.round(diffMs / (1000 * 60));
+                return `${diffMin} min`;
+              })() : '-'}
                   </div>
                   
                   {/* Quantidade */}
@@ -213,71 +186,40 @@ const Gestor = () => {
                   
                   {/* Motivo */}
                   <div className="text-xs">
-                    {atividade.motivo_atraso ? (
-                      <div className="bg-red-900/30 text-red-300 p-1 rounded text-xs">
+                    {atividade.motivo_atraso ? <div className="bg-red-900/30 text-red-300 p-1 rounded text-xs">
                         {atividade.motivo_atraso.substring(0, 30)}...
-                      </div>
-                    ) : (
-                      <FileText className="h-3 w-3 text-gray-400" />
-                    )}
+                      </div> : <FileText className="h-3 w-3 text-gray-400" />}
                   </div>
                   
                   {/* Status Visual */}
                   <div className="flex items-center space-x-2">
-                    <Badge 
-                      variant="outline" 
-                      className={`${getStatusColor(atividade.status)} text-white border-0 text-xs`}
-                    >
+                    <Badge variant="outline" className={`${getStatusColor(atividade.status)} text-white border-0 text-xs`}>
                       {getStatusText(atividade.status)}
                     </Badge>
-                    {atividade.tempo_match ? (
-                      <div className="flex space-x-1">
-                        <div className="bg-green-500 rounded-full p-1">
-                          <Check className="h-2 w-2 text-white" />
-                        </div>
-                        <div className="bg-green-500 rounded-full p-1">
-                          <Check className="h-2 w-2 text-white" />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex space-x-1">
+                    {atividade.tempo_match ? <div className="flex space-x-1">
+                        
+                        
+                      </div> : <div className="flex space-x-1">
                         <div className="bg-red-500 rounded-full p-1">
                           <X className="h-2 w-2 text-white" />
                         </div>
                         <div className="bg-yellow-500 rounded-full p-1">
                           <Clock className="h-2 w-2 text-white" />
                         </div>
-                      </div>
-                    )}
+                      </div>}
                   </div>
                   
                   {/* Ações */}
                   <div className="flex space-x-1">
-                    {atividade.status === 'pendente' && (
-                      <>
-                        <Button
-                          size="sm"
-                          onClick={() => handleAprovar(atividade.id)}
-                          className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 text-xs h-7"
-                        >
+                    {atividade.status === 'pendente' && <>
+                        <Button size="sm" onClick={() => handleAprovar(atividade.id)} className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 text-xs h-7">
                           <Check className="h-2 w-2 mr-1" />
                           Aprovar
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleRejeitar(atividade.id)}
-                          className="px-2 py-1 text-xs h-7"
-                        >
-                          <X className="h-2 w-2 mr-1" />
-                          Rejeitar
-                        </Button>
-                      </>
-                    )}
+                        
+                      </>}
                   </div>
-                </div>
-              ))
-            )}
+                </div>)}
           </CardContent>
         </Card>
 
@@ -311,8 +253,6 @@ const Gestor = () => {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Gestor;
