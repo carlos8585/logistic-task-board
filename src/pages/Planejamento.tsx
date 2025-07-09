@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Check, Edit, Clock, User, Package, Calendar as CalendarIcon, AlertTriangle, Filter } from "lucide-react";
+import { ArrowLeft, Plus, Check, Edit, Clock, User, Package, Calendar as CalendarIcon, AlertTriangle, Filter, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -140,6 +140,10 @@ const Planejamento = () => {
                atividadeDataFormatted === selectedDateFormatted;
       })
     : [];
+
+  // Separar atividades em andamento e terminadas
+  const atividadesEmAndamento = atividadesFiltradas.filter(atividade => atividade.status !== 'concluido');
+  const atividadesTerminadas = atividadesFiltradas.filter(atividade => atividade.status === 'concluido');
 
   // Carregar dados do Supabase
   useEffect(() => {
@@ -586,7 +590,8 @@ const Planejamento = () => {
           </div>
 
           {/* Right Side - Activities */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-6">
+            {/* Atividades Em Andamento */}
             <Card className="shadow-lg border-gray-700 bg-gray-800/90 backdrop-blur-sm">
               <CardHeader className="bg-gradient-to-r from-green-700 to-green-800 text-white rounded-t-lg">
                 <div className="flex items-center justify-between">
@@ -627,14 +632,14 @@ const Planejamento = () => {
                       <p className="text-sm">Selecione uma transportadora</p>
                       <p className="text-xs mt-2">Escolha uma transportadora para ver suas atividades</p>
                     </div>
-                  ) : atividadesFiltradas.length === 0 ? (
+                  ) : atividadesEmAndamento.length === 0 ? (
                     <div className="p-8 text-center text-gray-400">
                       <Clock className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                      <p className="text-sm">Nenhuma atividade programada</p>
+                      <p className="text-sm">Nenhuma atividade em andamento</p>
                       <p className="text-xs mt-2">Adicione uma atividade para esta transportadora na data selecionada</p>
                     </div>
                   ) : (
-                    atividadesFiltradas.map((atividade) => (
+                    atividadesEmAndamento.map((atividade) => (
                       <div 
                         key={atividade.id}
                         className={`p-3 border-b border-gray-700 grid grid-cols-6 gap-3 items-center hover:bg-gray-700/30 transition-colors ${
@@ -662,9 +667,6 @@ const Planejamento = () => {
                           <div className={`${isAtrasada(atividade) ? 'text-red-400' : 'text-gray-400'}`}>
                             Fim: {atividade.horario_planejado}
                           </div>
-                          {atividade.horario_finalizacao && (
-                            <div className="text-blue-400">Real: {atividade.horario_finalizacao}</div>
-                          )}
                         </div>
                         <div className="text-center">
                           <Badge variant="outline" className="font-medium text-xs border-gray-600 text-gray-300">
@@ -672,22 +674,16 @@ const Planejamento = () => {
                           </Badge>
                         </div>
                         <div className="flex justify-center">
-                          {atividade.status === 'concluido' ? (
-                            <div className="bg-green-800/30 text-green-400 rounded-full p-2">
-                              <Check className="h-3 w-3" />
-                            </div>
-                          ) : (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleFinalizarAtividade(atividade)}
-                              className={`text-xs hover:bg-blue-900/20 hover:border-blue-400 border-gray-600 text-gray-300 ${
-                                isAtrasada(atividade) ? 'border-red-400 text-red-300 hover:bg-red-900/20' : ''
-                              }`}
-                            >
-                              Finalizar
-                            </Button>
-                          )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleFinalizarAtividade(atividade)}
+                            className={`text-xs hover:bg-blue-900/20 hover:border-blue-400 border-gray-600 text-gray-300 ${
+                              isAtrasada(atividade) ? 'border-red-400 text-red-300 hover:bg-red-900/20' : ''
+                            }`}
+                          >
+                            Finalizar
+                          </Button>
                         </div>
                       </div>
                     ))
@@ -695,6 +691,84 @@ const Planejamento = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Atividades Terminadas */}
+            {selectedTransportadora && atividadesTerminadas.length > 0 && (
+              <Card className="shadow-lg border-gray-700 bg-gray-800/90 backdrop-blur-sm">
+                <CardHeader className="bg-gradient-to-r from-blue-700 to-blue-800 text-white rounded-t-lg">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    Atividades Terminadas
+                    <span className="text-sm font-normal ml-2">
+                      - {selectedTransportadora.nome} ({format(selectedDate, "dd/MM/yyyy", { locale: ptBR })})
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {/* Activities Header */}
+                  <div className="bg-gray-900 text-gray-200 p-3 grid grid-cols-7 gap-3 text-xs font-medium">
+                    <div className="col-span-2">Etapa & Transportadora</div>
+                    <div>Operador</div>
+                    <div>Horários</div>
+                    <div className="text-center">Volume</div>
+                    <div className="text-center">Tempo Match</div>
+                    <div className="text-center">Status</div>
+                  </div>
+                  
+                  {/* Activities List */}
+                  <div className="max-h-60 overflow-y-auto">
+                    {atividadesTerminadas.map((atividade) => (
+                      <div 
+                        key={atividade.id}
+                        className="p-3 border-b border-gray-700 grid grid-cols-7 gap-3 items-center hover:bg-gray-700/30 transition-colors"
+                      >
+                        <div className="col-span-2">
+                          <div className="font-medium text-gray-100 mb-1 text-sm">
+                            {atividade.etapa}
+                          </div>
+                          <div className="text-xs text-gray-400 flex items-center gap-1">
+                            <Package className="h-3 w-3" />
+                            {atividade.transportadora_nome}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <User className="h-3 w-3 text-gray-400" />
+                          <span className="font-medium text-gray-200 text-sm">{atividade.operador}</span>
+                        </div>
+                        <div className="text-xs">
+                          <div className="font-medium text-green-400">Início: {atividade.horario_salvo}</div>
+                          <div className="text-gray-400">Fim Planejado: {atividade.horario_planejado}</div>
+                          {atividade.horario_finalizacao && (
+                            <div className="text-blue-400">Fim Real: {atividade.horario_finalizacao}</div>
+                          )}
+                        </div>
+                        <div className="text-center">
+                          <Badge variant="outline" className="font-medium text-xs border-gray-600 text-gray-300">
+                            {atividade.volume} {atividade.etapa === "Picking - Área de Saída" ? "unid." : "pallets"}
+                          </Badge>
+                        </div>
+                        <div className="text-center">
+                          {atividade.tempo_match ? (
+                            <Badge variant="outline" className="text-xs border-green-600 text-green-400 bg-green-900/20">
+                              No Prazo
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-xs border-red-600 text-red-400 bg-red-900/20">
+                              Atrasado
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex justify-center">
+                          <div className="bg-green-800/30 text-green-400 rounded-full p-2">
+                            <Check className="h-3 w-3" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
