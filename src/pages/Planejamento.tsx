@@ -7,10 +7,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Check, Edit, Clock, User, Package, Calendar, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Plus, Check, Edit, Clock, User, Package, Calendar as CalendarIcon, AlertTriangle, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface Transportadora extends Tables<'transportadoras'> {
@@ -113,6 +118,8 @@ const Planejamento = () => {
   const [showAtrasoDialog, setShowAtrasoDialog] = useState(false);
   const [atividadeToFinalize, setAtividadeToFinalize] = useState<Atividade | null>(null);
   const [motivoAtraso, setMotivoAtraso] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   
   // Form states
   const [nomeTransportadora, setNomeTransportadora] = useState("");
@@ -122,9 +129,16 @@ const Planejamento = () => {
   const [etapa, setEtapa] = useState("");
   const [volume, setVolume] = useState("");
 
-  // Filtrar atividades baseadas na transportadora selecionada
+  // Filtrar atividades baseadas na transportadora selecionada e data
   const atividadesFiltradas = selectedTransportadora 
-    ? atividades.filter(atividade => atividade.transportadora_id === selectedTransportadora.id)
+    ? atividades.filter(atividade => {
+        const atividadeData = new Date(atividade.created_at);
+        const selectedDateFormatted = format(selectedDate, 'yyyy-MM-dd');
+        const atividadeDataFormatted = format(atividadeData, 'yyyy-MM-dd');
+        
+        return atividade.transportadora_id === selectedTransportadora.id && 
+               atividadeDataFormatted === selectedDateFormatted;
+      })
     : [];
 
   // Carregar dados do Supabase
@@ -263,7 +277,8 @@ const Planejamento = () => {
       volume: volumeNum,
       horario_salvo: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       horario_planejado: horarioPlaneado.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      status: 'planejado' as const
+      status: 'planejado' as const,
+      created_at: agora.toISOString()
     };
 
     const { data, error } = await supabase
@@ -427,9 +442,36 @@ const Planejamento = () => {
               <p className="text-gray-400 text-sm mt-1">Gerencie transportadoras e organize as atividades operacionais</p>
             </div>
           </div>
-          <Badge variant="destructive" className="px-3 py-1 text-xs font-semibold">
-            3M
-          </Badge>
+          <div className="flex items-center gap-3">
+            {/* Filtro de Data */}
+            <Popover open={showDatePicker} onOpenChange={setShowDatePicker}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="border-gray-600 bg-gray-700/50 text-gray-100 hover:bg-gray-600/50"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  {format(selectedDate, "dd/MM/yyyy", { locale: ptBR })}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-600" align="end">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => {
+                    if (date) {
+                      setSelectedDate(date);
+                      setShowDatePicker(false);
+                    }
+                  }}
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+            <Badge variant="destructive" className="px-3 py-1 text-xs font-semibold">
+              3M
+            </Badge>
+          </div>
         </div>
 
         {/* Form Section */}
@@ -471,7 +513,7 @@ const Planejamento = () => {
               </div>
               <div className="space-y-2">
                 <Label className="text-gray-300 text-sm font-medium flex items-center gap-2">
-                  <Calendar className="h-3 w-3" />
+                  <CalendarIcon className="h-3 w-3" />
                   Carga Para
                 </Label>
                 <Select value={cargaPara} onValueChange={setCargaPara}>
@@ -552,7 +594,7 @@ const Planejamento = () => {
                     Atividades Programadas
                     {selectedTransportadora && (
                       <span className="text-sm font-normal ml-2">
-                        - {selectedTransportadora.nome}
+                        - {selectedTransportadora.nome} ({format(selectedDate, "dd/MM/yyyy", { locale: ptBR })})
                       </span>
                     )}
                   </CardTitle>
@@ -573,7 +615,7 @@ const Planejamento = () => {
                   <div className="col-span-2">Etapa & Transportadora</div>
                   <div>Operador</div>
                   <div>Horários</div>
-                  <div>Volume</div>
+                  <div className="text-center">Volume</div>
                   <div className="text-center">Status</div>
                 </div>
                 
@@ -589,7 +631,7 @@ const Planejamento = () => {
                     <div className="p-8 text-center text-gray-400">
                       <Clock className="h-10 w-10 mx-auto mb-3 opacity-50" />
                       <p className="text-sm">Nenhuma atividade programada</p>
-                      <p className="text-xs mt-2">Adicione uma atividade para esta transportadora</p>
+                      <p className="text-xs mt-2">Adicione uma atividade para esta transportadora na data selecionada</p>
                     </div>
                   ) : (
                     atividadesFiltradas.map((atividade) => (
