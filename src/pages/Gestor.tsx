@@ -200,12 +200,8 @@ const Gestor = () => {
                         
                         
                       </div> : <div className="flex space-x-1">
-                        <div className="bg-red-500 rounded-full p-1">
-                          <X className="h-2 w-2 text-white" />
-                        </div>
-                        <div className="bg-yellow-500 rounded-full p-1">
-                          <Clock className="h-2 w-2 text-white" />
-                        </div>
+                        
+                        
                       </div>}
                   </div>
                   
