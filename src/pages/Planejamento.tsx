@@ -141,9 +141,13 @@ const Planejamento = () => {
       })
     : [];
 
-  // Separar atividades em andamento e terminadas
-  const atividadesEmAndamento = atividadesFiltradas.filter(atividade => atividade.status !== 'concluido');
-  const atividadesTerminadas = atividadesFiltradas.filter(atividade => atividade.status === 'concluido');
+  // Separar atividades em andamento e terminadas - atividades finalizadas NÃO aparecem em andamento
+  const atividadesEmAndamento = atividadesFiltradas.filter(atividade => 
+    atividade.status !== 'concluido' && atividade.status !== 'aprovado' && atividade.status !== 'rejeitado'
+  );
+  const atividadesTerminadas = atividadesFiltradas.filter(atividade => 
+    atividade.status === 'concluido' || atividade.status === 'aprovado' || atividade.status === 'rejeitado'
+  );
 
   // Carregar dados do Supabase
   useEffect(() => {
