@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -192,43 +191,43 @@ const Planejamento = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => navigate('/')}
-              className="text-slate-600 hover:text-slate-900 hover:bg-white/80"
+              className="text-gray-300 hover:text-white hover:bg-white/10"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-slate-900">Planejamento de Atividades</h1>
-              <p className="text-slate-600 mt-1">Gerencie transportadoras e organize as atividades operacionais</p>
+              <h1 className="text-xl font-bold text-white">Planejamento de Atividades</h1>
+              <p className="text-gray-400 text-sm mt-1">Gerencie transportadoras e organize as atividades operacionais</p>
             </div>
           </div>
-          <Badge variant="destructive" className="px-4 py-2 text-sm font-semibold">
+          <Badge variant="destructive" className="px-3 py-1 text-xs font-semibold">
             3M
           </Badge>
         </div>
 
         {/* Form Section */}
-        <Card className="mb-8 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-xl text-slate-800 flex items-center gap-2">
-              <Package className="h-5 w-5 text-blue-600" />
+        <Card className="mb-6 shadow-lg border-gray-700 bg-gray-800/90 backdrop-blur-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg text-gray-100 flex items-center gap-2">
+              <Package className="h-4 w-4 text-blue-400" />
               Adicionar Transportadora
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
               <div className="space-y-2">
-                <Label htmlFor="transportadora" className="text-slate-700 font-medium flex items-center gap-2">
-                  <span className="text-red-500">*</span>
+                <Label htmlFor="transportadora" className="text-gray-300 text-sm font-medium flex items-center gap-2">
+                  <span className="text-red-400">*</span>
                   Transportadora
                 </Label>
                 <Input
@@ -236,13 +235,13 @@ const Planejamento = () => {
                   value={nomeTransportadora}
                   onChange={(e) => setNomeTransportadora(e.target.value)}
                   placeholder="Nome da transportadora"
-                  className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+                  className="border-gray-600 bg-gray-700/50 text-gray-100 placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400/20 text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="horaSaida" className="text-slate-700 font-medium flex items-center gap-2">
-                  <span className="text-red-500">*</span>
-                  <Clock className="h-4 w-4" />
+                <Label htmlFor="horaSaida" className="text-gray-300 text-sm font-medium flex items-center gap-2">
+                  <span className="text-red-400">*</span>
+                  <Clock className="h-3 w-3" />
                   Hora de Saída
                 </Label>
                 <Input
@@ -250,30 +249,30 @@ const Planejamento = () => {
                   type="time"
                   value={horaSaida}
                   onChange={(e) => setHoraSaida(e.target.value)}
-                  className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+                  className="border-gray-600 bg-gray-700/50 text-gray-100 focus:border-blue-400 focus:ring-blue-400/20 text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-slate-700 font-medium flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
+                <Label className="text-gray-300 text-sm font-medium flex items-center gap-2">
+                  <Calendar className="h-3 w-3" />
                   Carga Para
                 </Label>
                 <Select value={cargaPara} onValueChange={setCargaPara}>
-                  <SelectTrigger className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20">
+                  <SelectTrigger className="border-gray-600 bg-gray-700/50 text-gray-100 focus:border-blue-400 focus:ring-blue-400/20 text-sm">
                     <SelectValue placeholder="Selecione o período" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="HOJE">Hoje</SelectItem>
-                    <SelectItem value="AMANHÃ">Amanhã</SelectItem>
-                    <SelectItem value="3 DIAS">3 Dias</SelectItem>
+                  <SelectContent className="bg-gray-800 border-gray-600">
+                    <SelectItem value="HOJE" className="text-gray-100 focus:bg-gray-700">Hoje</SelectItem>
+                    <SelectItem value="AMANHÃ" className="text-gray-100 focus:bg-gray-700">Amanhã</SelectItem>
+                    <SelectItem value="3 DIAS" className="text-gray-100 focus:bg-gray-700">3 Dias</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <Button 
                 onClick={handleAddTransportadora}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold h-10 px-6 shadow-lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium h-9 px-4 shadow-lg text-sm"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-3 w-3 mr-2" />
                 Adicionar
               </Button>
             </div>
@@ -281,42 +280,42 @@ const Planejamento = () => {
         </Card>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Side - Transportadoras List */}
           <div className="lg:col-span-1">
-            <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-              <CardHeader className="bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-t-lg">
-                <CardTitle className="text-center text-lg">Transportadoras Cadastradas</CardTitle>
+            <Card className="shadow-lg border-gray-700 bg-gray-800/90 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-t-lg">
+                <CardTitle className="text-center text-base">Transportadoras Cadastradas</CardTitle>
               </CardHeader>
-              <CardContent className="p-0 max-h-96 overflow-y-auto">
+              <CardContent className="p-0 max-h-80 overflow-y-auto">
                 {transportadoras.length === 0 ? (
-                  <div className="p-8 text-center text-slate-500">
-                    <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhuma transportadora cadastrada</p>
+                  <div className="p-6 text-center text-gray-400">
+                    <Package className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                    <p className="text-sm">Nenhuma transportadora cadastrada</p>
                   </div>
                 ) : (
                   transportadoras.map((transportadora) => (
                     <div 
                       key={transportadora.id}
-                      className={`p-4 border-b border-slate-100 cursor-pointer hover:bg-blue-50 transition-all duration-200 ${
-                        transportadora.selected ? 'bg-blue-100 border-l-4 border-l-blue-600 shadow-sm' : ''
+                      className={`p-3 border-b border-gray-700 cursor-pointer hover:bg-blue-900/20 transition-all duration-200 ${
+                        transportadora.selected ? 'bg-blue-900/30 border-l-4 border-l-blue-500 shadow-sm' : ''
                       }`}
                       onClick={() => handleSelectTransportadora(transportadora)}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <Edit className="h-4 w-4 text-blue-600" />
-                        <Badge variant="secondary" className="text-xs">
+                        <Edit className="h-3 w-3 text-blue-400" />
+                        <Badge variant="secondary" className="text-xs bg-gray-700 text-gray-300">
                           {transportadora.dataAdicao}
                         </Badge>
                       </div>
-                      <div className="font-semibold text-slate-900 mb-1">
+                      <div className="font-medium text-gray-100 mb-1 text-sm">
                         {transportadora.nome}
                       </div>
                       <div className="flex items-center justify-between">
-                        <div className="text-2xl font-bold text-blue-600">
+                        <div className="text-lg font-bold text-blue-400">
                           {transportadora.horaSaida}
                         </div>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
                           {transportadora.cargaPara}
                         </Badge>
                       </div>
@@ -329,24 +328,24 @@ const Planejamento = () => {
 
           {/* Right Side - Activities */}
           <div className="lg:col-span-2">
-            <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-              <CardHeader className="bg-gradient-to-r from-green-600 to-green-700 text-white rounded-t-lg">
+            <Card className="shadow-lg border-gray-700 bg-gray-800/90 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-green-700 to-green-800 text-white rounded-t-lg">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Atividades Programadas</CardTitle>
+                  <CardTitle className="text-base">Atividades Programadas</CardTitle>
                   <Button 
                     onClick={handleAddAtividade}
                     variant="secondary"
                     size="sm"
-                    className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/30 text-xs"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-3 w-3 mr-2" />
                     Nova Atividade
                   </Button>
                 </div>
               </CardHeader>
               <CardContent className="p-0">
                 {/* Activities Header */}
-                <div className="bg-slate-800 text-white p-4 grid grid-cols-6 gap-4 text-sm font-medium">
+                <div className="bg-gray-900 text-gray-200 p-3 grid grid-cols-6 gap-3 text-xs font-medium">
                   <div className="col-span-2">Etapa & Transportadora</div>
                   <div>Operador</div>
                   <div>Horários</div>
@@ -355,50 +354,50 @@ const Planejamento = () => {
                 </div>
                 
                 {/* Activities List */}
-                <div className="max-h-96 overflow-y-auto">
+                <div className="max-h-80 overflow-y-auto">
                   {atividades.length === 0 ? (
-                    <div className="p-12 text-center text-slate-500">
-                      <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>Nenhuma atividade programada</p>
-                      <p className="text-sm mt-2">Selecione uma transportadora e adicione uma atividade</p>
+                    <div className="p-8 text-center text-gray-400">
+                      <Clock className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                      <p className="text-sm">Nenhuma atividade programada</p>
+                      <p className="text-xs mt-2">Selecione uma transportadora e adicione uma atividade</p>
                     </div>
                   ) : (
                     atividades.map((atividade) => (
                       <div 
                         key={atividade.id}
-                        className="p-4 border-b border-slate-100 grid grid-cols-6 gap-4 items-center hover:bg-slate-50 transition-colors"
+                        className="p-3 border-b border-gray-700 grid grid-cols-6 gap-3 items-center hover:bg-gray-700/30 transition-colors"
                       >
                         <div className="col-span-2">
-                          <div className="font-semibold text-slate-900 mb-1">{atividade.etapa}</div>
-                          <div className="text-sm text-slate-600 flex items-center gap-1">
+                          <div className="font-medium text-gray-100 mb-1 text-sm">{atividade.etapa}</div>
+                          <div className="text-xs text-gray-400 flex items-center gap-1">
                             <Package className="h-3 w-3" />
                             {atividade.transportadoraNome}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-slate-500" />
-                          <span className="font-medium text-slate-800">{atividade.operador}</span>
+                          <User className="h-3 w-3 text-gray-400" />
+                          <span className="font-medium text-gray-200 text-sm">{atividade.operador}</span>
                         </div>
-                        <div className="text-sm">
-                          <div className="font-medium text-green-600">Início: {atividade.horarioSalvo}</div>
-                          <div className="text-slate-600">Fim: {atividade.horarioPlaneado}</div>
+                        <div className="text-xs">
+                          <div className="font-medium text-green-400">Início: {atividade.horarioSalvo}</div>
+                          <div className="text-gray-400">Fim: {atividade.horarioPlaneado}</div>
                         </div>
                         <div className="text-center">
-                          <Badge variant="outline" className="font-semibold">
+                          <Badge variant="outline" className="font-medium text-xs border-gray-600 text-gray-300">
                             {atividade.volume} pallets
                           </Badge>
                         </div>
                         <div className="flex justify-center">
                           {atividade.status === 'concluido' ? (
-                            <div className="bg-green-100 text-green-800 rounded-full p-2">
-                              <Check className="h-4 w-4" />
+                            <div className="bg-green-800/30 text-green-400 rounded-full p-2">
+                              <Check className="h-3 w-3" />
                             </div>
                           ) : (
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleFinalizarAtividade(atividade)}
-                              className="text-xs hover:bg-blue-50 hover:border-blue-300"
+                              className="text-xs hover:bg-blue-900/20 hover:border-blue-400 border-gray-600 text-gray-300"
                             >
                               Finalizar
                             </Button>
@@ -416,38 +415,38 @@ const Planejamento = () => {
 
       {/* Add Activity Dialog */}
       <Dialog open={showAtividadeDialog} onOpenChange={setShowAtividadeDialog}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-gray-800 border-gray-700">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl text-slate-800 flex items-center justify-center gap-2">
-              <Plus className="h-5 w-5 text-blue-600" />
+            <DialogTitle className="text-center text-lg text-gray-100 flex items-center justify-center gap-2">
+              <Plus className="h-4 w-4 text-blue-400" />
               Adicionar Nova Etapa
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-6 mt-6">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-4 mt-4">
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label className="text-slate-700 font-medium">Transportadora</Label>
+                <Label className="text-gray-300 text-sm font-medium">Transportadora</Label>
                 <Input 
                   value={selectedTransportadora?.nome || ""} 
                   disabled 
-                  className="bg-slate-50 border-slate-200"
+                  className="bg-gray-700/50 border-gray-600 text-gray-300 text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-slate-700 font-medium">Hora de Saída</Label>
+                <Label className="text-gray-300 text-sm font-medium">Hora de Saída</Label>
                 <Input 
                   value={selectedTransportadora?.horaSaida || ""} 
                   disabled 
-                  className="bg-slate-50 border-slate-200"
+                  className="bg-gray-700/50 border-gray-600 text-gray-300 text-sm"
                 />
               </div>
             </div>
             
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="operador" className="text-slate-700 font-medium flex items-center gap-2">
-                  <span className="text-red-500">*</span>
-                  <User className="h-4 w-4" />
+                <Label htmlFor="operador" className="text-gray-300 text-sm font-medium flex items-center gap-2">
+                  <span className="text-red-400">*</span>
+                  <User className="h-3 w-3" />
                   Operador
                 </Label>
                 <Input
@@ -455,21 +454,21 @@ const Planejamento = () => {
                   value={operador}
                   onChange={(e) => setOperador(e.target.value)}
                   placeholder="Nome do operador"
-                  className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+                  className="border-gray-600 bg-gray-700/50 text-gray-100 placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400/20 text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="etapa" className="text-slate-700 font-medium flex items-center gap-2">
-                  <span className="text-red-500">*</span>
+                <Label htmlFor="etapa" className="text-gray-300 text-sm font-medium flex items-center gap-2">
+                  <span className="text-red-400">*</span>
                   Etapa
                 </Label>
                 <Select value={etapa} onValueChange={setEtapa}>
-                  <SelectTrigger className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20">
+                  <SelectTrigger className="border-gray-600 bg-gray-700/50 text-gray-100 focus:border-blue-400 focus:ring-blue-400/20 text-sm">
                     <SelectValue placeholder="Selecione a etapa" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-60">
+                  <SelectContent className="max-h-48 bg-gray-800 border-gray-600">
                     {etapasDisponiveis.map((etapaOption) => (
-                      <SelectItem key={etapaOption} value={etapaOption}>
+                      <SelectItem key={etapaOption} value={etapaOption} className="text-gray-100 focus:bg-gray-700 text-sm">
                         {etapaOption}
                       </SelectItem>
                     ))}
@@ -477,9 +476,9 @@ const Planejamento = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="volume" className="text-slate-700 font-medium flex items-center gap-2">
-                  <span className="text-red-500">*</span>
-                  <Package className="h-4 w-4" />
+                <Label htmlFor="volume" className="text-gray-300 text-sm font-medium flex items-center gap-2">
+                  <span className="text-red-400">*</span>
+                  <Package className="h-3 w-3" />
                   Volume
                 </Label>
                 <Input
@@ -488,17 +487,17 @@ const Planejamento = () => {
                   value={volume}
                   onChange={(e) => setVolume(e.target.value)}
                   placeholder="Qtd pallets"
-                  className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+                  className="border-gray-600 bg-gray-700/50 text-gray-100 placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400/20 text-sm"
                 />
               </div>
             </div>
             
-            <div className="flex justify-center pt-6">
+            <div className="flex justify-center pt-4">
               <Button 
                 onClick={handleSaveAtividade}
-                className="bg-blue-600 hover:bg-blue-700 px-8 py-2 shadow-lg"
+                className="bg-blue-600 hover:bg-blue-700 px-6 py-2 shadow-lg text-sm"
               >
-                <Check className="h-4 w-4 mr-2" />
+                <Check className="h-3 w-3 mr-2" />
                 Iniciar Atividade
               </Button>
             </div>
@@ -508,30 +507,30 @@ const Planejamento = () => {
 
       {/* Finalize Activity Dialog */}
       <Dialog open={showFinalizarDialog} onOpenChange={setShowFinalizarDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-gray-800 border-gray-700">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl text-slate-800">Finalizar Tarefa</DialogTitle>
+            <DialogTitle className="text-center text-lg text-gray-100">Finalizar Tarefa</DialogTitle>
           </DialogHeader>
-          <div className="text-center py-6">
-            <div className="bg-yellow-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
-              <Clock className="h-8 w-8 text-yellow-600 mx-auto" />
+          <div className="text-center py-4">
+            <div className="bg-yellow-900/30 rounded-full p-3 w-12 h-12 mx-auto mb-3">
+              <Clock className="h-6 w-6 text-yellow-400 mx-auto" />
             </div>
-            <p className="text-slate-700 mb-2">Deseja finalizar a tarefa:</p>
-            <p className="font-semibold text-slate-900">{atividadeToFinalize?.etapa}?</p>
+            <p className="text-gray-300 mb-2 text-sm">Deseja finalizar a tarefa:</p>
+            <p className="font-medium text-gray-100 text-sm">{atividadeToFinalize?.etapa}?</p>
           </div>
-          <div className="flex justify-center space-x-4">
+          <div className="flex justify-center space-x-3">
             <Button 
               variant="outline" 
               onClick={() => setShowFinalizarDialog(false)}
-              className="px-6"
+              className="px-4 text-sm border-gray-600 text-gray-300 hover:bg-gray-700"
             >
               Cancelar
             </Button>
             <Button 
               onClick={confirmFinalizarAtividade}
-              className="bg-blue-600 hover:bg-blue-700 px-6"
+              className="bg-blue-600 hover:bg-blue-700 px-4 text-sm"
             >
-              <Check className="h-4 w-4 mr-2" />
+              <Check className="h-3 w-3 mr-2" />
               Confirmar
             </Button>
           </div>

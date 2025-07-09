@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -167,29 +166,29 @@ const Gestor = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => navigate('/')}
-              className="text-white hover:bg-white/10 mr-4"
+              className="text-gray-300 hover:bg-white/10 mr-3 hover:text-white"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
-            <h1 className="text-2xl font-bold text-white">CHECK - FAC / COO</h1>
+            <h1 className="text-xl font-bold text-white">CHECK - FAC / COO</h1>
           </div>
-          <div className="bg-red-600 text-white px-4 py-2 rounded">3M</div>
+          <div className="bg-red-600 text-white px-3 py-1 rounded text-sm">3M</div>
         </div>
 
         {/* Main Content */}
-        <Card className="bg-white/95">
-          <CardHeader className="bg-blue-800 text-white p-0">
-            <div className="grid grid-cols-9 gap-2 p-4 text-sm font-semibold">
+        <Card className="bg-gray-800/95 border-gray-700">
+          <CardHeader className="bg-gray-900 text-white p-0">
+            <div className="grid grid-cols-9 gap-2 p-3 text-xs font-medium">
               <div>ID</div>
               <div>NOME</div>
               <div>ETAPA</div>
@@ -205,92 +204,92 @@ const Gestor = () => {
             {atividades.map((atividade, index) => (
               <div 
                 key={atividade.id}
-                className={`grid grid-cols-9 gap-2 p-4 border-b items-center hover:bg-gray-50 ${
-                  index % 2 === 0 ? 'bg-green-50' : 'bg-white'
+                className={`grid grid-cols-9 gap-2 p-3 border-b border-gray-700 items-center hover:bg-gray-700/30 ${
+                  index % 2 === 0 ? 'bg-gray-800/50' : 'bg-gray-800/80'
                 }`}
               >
                 {/* ID */}
-                <div className="text-sm font-mono">{atividade.id}</div>
+                <div className="text-xs font-mono text-gray-300">{atividade.id}</div>
                 
                 {/* Nome */}
-                <div className="text-sm font-semibold">{atividade.nome}</div>
+                <div className="text-xs font-medium text-gray-200">{atividade.nome}</div>
                 
                 {/* Etapa */}
-                <div className="text-sm">
-                  <div className="font-semibold text-blue-900">{atividade.etapa.split(' ')[0]}</div>
-                  <div className="text-xs text-gray-600">
+                <div className="text-xs">
+                  <div className="font-medium text-blue-400">{atividade.etapa.split(' ')[0]}</div>
+                  <div className="text-xs text-gray-400">
                     {atividade.etapa.substring(atividade.etapa.indexOf(' ') + 1)}
                   </div>
                 </div>
                 
                 {/* Horários */}
-                <div className="text-sm">
+                <div className="text-xs">
                   <div className="flex items-center space-x-1">
-                    <span>{atividade.inicioReal}</span>
-                    <span>{atividade.fimReal}</span>
-                    <span className="text-gray-600">{atividade.planejado}</span>
+                    <span className="text-gray-200">{atividade.inicioReal}</span>
+                    <span className="text-gray-200">{atividade.fimReal}</span>
+                    <span className="text-gray-400">{atividade.planejado}</span>
                   </div>
                 </div>
                 
                 {/* Tempo */}
-                <div className="text-sm font-semibold">{atividade.tempo}</div>
+                <div className="text-xs font-medium text-gray-200">{atividade.tempo}</div>
                 
                 {/* Quantidade */}
-                <div className="text-sm font-semibold">{atividade.qtd}</div>
+                <div className="text-xs font-medium text-gray-200">{atividade.qtd}</div>
                 
                 {/* Motivo */}
-                <div className="text-sm">
-                  <FileText className="h-4 w-4 text-gray-400" />
+                <div className="text-xs">
+                  <FileText className="h-3 w-3 text-gray-400" />
                 </div>
                 
                 {/* Status Visual */}
                 <div className="flex items-center space-x-2">
                   <Badge 
                     variant="outline" 
-                    className={`${getStatusColor(atividade.status)} text-white border-0`}
+                    className={`${getStatusColor(atividade.status)} text-white border-0 text-xs`}
                   >
                     {getStatusText(atividade.status)}
                   </Badge>
                   {atividade.tempoMatch ? (
                     <div className="flex space-x-1">
                       <div className="bg-green-500 rounded-full p-1">
-                        <Check className="h-3 w-3 text-white" />
+                        <Check className="h-2 w-2 text-white" />
                       </div>
                       <div className="bg-green-500 rounded-full p-1">
-                        <Check className="h-3 w-3 text-white" />
+                        <Check className="h-2 w-2 text-white" />
                       </div>
                     </div>
                   ) : (
                     <div className="flex space-x-1">
                       <div className="bg-red-500 rounded-full p-1">
-                        <X className="h-3 w-3 text-white" />
+                        <X className="h-2 w-2 text-white" />
                       </div>
                       <div className="bg-yellow-500 rounded-full p-1">
-                        <Clock className="h-3 w-3 text-white" />
+                        <Clock className="h-2 w-2 text-white" />
                       </div>
                     </div>
                   )}
                 </div>
                 
                 {/* Ações */}
-                <div className="flex space-x-2">
+                <div className="flex space-x-1">
                   {atividade.status === 'pendente' && (
                     <>
                       <Button
                         size="sm"
                         onClick={() => handleAprovar(atividade.id)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs"
+                        className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 text-xs h-7"
                       >
-                        <Check className="h-3 w-3 mr-1" />
+                        <Check className="h-2 w-2 mr-1" />
                         Aprovar
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
                         onClick={() => handleRejeitar(atividade.id)}
-                        className="px-3 py-1 text-xs"
+                        className="px-2 py-1 text-xs h-7"
                       >
-                        <X className="h-3 w-3 mr-1" />
+                        <X className="h-2 w-2 mr-1" />
                         Rejeitar
                       </Button>
                     </>
@@ -302,31 +301,31 @@ const Gestor = () => {
         </Card>
 
         {/* Summary Stats */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-green-100 border-green-300">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-700">
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Card className="bg-green-900/20 border-green-700/50">
+            <CardContent className="p-3 text-center">
+              <div className="text-lg font-bold text-green-400">
                 {atividades.filter(a => a.status === 'aprovado').length}
               </div>
-              <div className="text-green-600">Atividades Aprovadas</div>
+              <div className="text-green-300 text-xs">Atividades Aprovadas</div>
             </CardContent>
           </Card>
           
-          <Card className="bg-yellow-100 border-yellow-300">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-yellow-700">
+          <Card className="bg-yellow-900/20 border-yellow-700/50">
+            <CardContent className="p-3 text-center">
+              <div className="text-lg font-bold text-yellow-400">
                 {atividades.filter(a => a.status === 'pendente').length}
               </div>
-              <div className="text-yellow-600">Atividades Pendentes</div>
+              <div className="text-yellow-300 text-xs">Atividades Pendentes</div>
             </CardContent>
           </Card>
           
-          <Card className="bg-red-100 border-red-300">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-red-700">
+          <Card className="bg-red-900/20 border-red-700/50">
+            <CardContent className="p-3 text-center">
+              <div className="text-lg font-bold text-red-400">
                 {atividades.filter(a => a.status === 'rejeitado').length}
               </div>
-              <div className="text-red-600">Atividades Rejeitadas</div>
+              <div className="text-red-300 text-xs">Atividades Rejeitadas</div>
             </CardContent>
           </Card>
         </div>
