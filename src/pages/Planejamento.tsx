@@ -122,6 +122,11 @@ const Planejamento = () => {
   const [etapa, setEtapa] = useState("");
   const [volume, setVolume] = useState("");
 
+  // Filtrar atividades baseadas na transportadora selecionada
+  const atividadesFiltradas = selectedTransportadora 
+    ? atividades.filter(atividade => atividade.transportadora_id === selectedTransportadora.id)
+    : [];
+
   // Carregar dados do Supabase
   useEffect(() => {
     loadTransportadoras();
@@ -543,7 +548,14 @@ const Planejamento = () => {
             <Card className="shadow-lg border-gray-700 bg-gray-800/90 backdrop-blur-sm">
               <CardHeader className="bg-gradient-to-r from-green-700 to-green-800 text-white rounded-t-lg">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Atividades Programadas</CardTitle>
+                  <CardTitle className="text-base">
+                    Atividades Programadas
+                    {selectedTransportadora && (
+                      <span className="text-sm font-normal ml-2">
+                        - {selectedTransportadora.nome}
+                      </span>
+                    )}
+                  </CardTitle>
                   <Button 
                     onClick={handleAddAtividade}
                     variant="secondary"
@@ -567,14 +579,20 @@ const Planejamento = () => {
                 
                 {/* Activities List */}
                 <div className="max-h-80 overflow-y-auto">
-                  {atividades.length === 0 ? (
+                  {!selectedTransportadora ? (
+                    <div className="p-8 text-center text-gray-400">
+                      <Package className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                      <p className="text-sm">Selecione uma transportadora</p>
+                      <p className="text-xs mt-2">Escolha uma transportadora para ver suas atividades</p>
+                    </div>
+                  ) : atividadesFiltradas.length === 0 ? (
                     <div className="p-8 text-center text-gray-400">
                       <Clock className="h-10 w-10 mx-auto mb-3 opacity-50" />
                       <p className="text-sm">Nenhuma atividade programada</p>
-                      <p className="text-xs mt-2">Selecione uma transportadora e adicione uma atividade</p>
+                      <p className="text-xs mt-2">Adicione uma atividade para esta transportadora</p>
                     </div>
                   ) : (
-                    atividades.map((atividade) => (
+                    atividadesFiltradas.map((atividade) => (
                       <div 
                         key={atividade.id}
                         className={`p-3 border-b border-gray-700 grid grid-cols-6 gap-3 items-center hover:bg-gray-700/30 transition-colors ${
