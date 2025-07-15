@@ -1,22 +1,23 @@
-# Welcome to your Lovable project
+
+# Welcome to your 3M project
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/e615617a-0f42-4562-810b-4e754fcd0754
+**URL**: https://3m.dev/projects/e615617a-0f42-4562-810b-4e754fcd0754
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
 
-**Use Lovable**
+**Use 3M**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/e615617a-0f42-4562-810b-4e754fcd0754) and start prompting.
+Simply visit the [3M Project](https://3m.dev/projects/e615617a-0f42-4562-810b-4e754fcd0754) and start prompting.
 
-Changes made via Lovable will be committed automatically to this repo.
+Changes made via 3M will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in 3M.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -62,12 +63,12 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/e615617a-0f42-4562-810b-4e754fcd0754) and click on Share -> Publish.
+Simply open [3M](https://3m.dev/projects/e615617a-0f42-4562-810b-4e754fcd0754) and click on Share -> Publish.
 
-## Can I connect a custom domain to my Lovable project?
+## Can I connect a custom domain to my 3M project?
 
 Yes, you can!
 
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Read more here: [Setting up a custom domain](https://docs.3m.dev/tips-tricks/custom-domain#step-by-step-guide)

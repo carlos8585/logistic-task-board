@@ -14,7 +14,7 @@ const Index = () => {
         <div className="text-center mb-16">
           <div className="flex items-center justify-center mb-8">
             <img 
-              src="/lovable-uploads/9b9e57d3-e4e9-4948-b276-1981b916d6ab.png" 
+              src="/3m-uploads/9b9e57d3-e4e9-4948-b276-1981b916d6ab.png" 
               alt="3M Logo" 
               className="h-20 w-auto mr-6"
             />
