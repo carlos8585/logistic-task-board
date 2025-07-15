@@ -10,11 +10,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex items-center justify-center p-4">
       <div className="relative z-10 w-full max-w-4xl">
-        {/* Header */}
         <div className="text-center mb-16">
           <div className="flex items-center justify-center mb-8">
             <img 
-              src="/lovable-uploads/9b9e57d3-e4e9-4948-b276-1981b916d6ab.png" 
+              src="/3m-uploads/9b9e57d3-e4e9-4948-b276-1981b916d6ab.png" 
               alt="3M Logo" 
               className="h-20 w-auto mr-6"
             />
@@ -25,7 +24,6 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Main Access Cards */}
         <div className="grid md:grid-cols-2 gap-10 max-w-3xl mx-auto">
           <Card className="bg-slate-800/50 backdrop-blur-lg border-slate-700/50 hover:bg-slate-800/70 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/20">
             <CardContent className="p-10 text-center">
